@@ -7,9 +7,16 @@ export const registerUser = async (req, res) => {
     const { userName, email, password } = req.body;
     //External Error
     try {
+        //Missing fields
         if (!userName || !email || !password) {
             return res.status(400).json({ error: "All fields must be filled" });
         }
+        //Invalid email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: "Invalid email format" });
+        }
+        //Email already existed
         const existingUser = await userModel.findOne({ email });
         if (existingUser) {
             return res.status(409).json({ error: "Email already exists" });
